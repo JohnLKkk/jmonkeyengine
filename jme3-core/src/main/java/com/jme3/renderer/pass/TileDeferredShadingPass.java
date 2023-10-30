@@ -46,8 +46,13 @@ public class TileDeferredShadingPass extends DeferredShadingPass{
 
     @Override
     protected Material getMaterial() {
-        MaterialDef def = (MaterialDef) assetManager.loadAsset(_S_TILE_BASED_DEFERRED_SHADING_PASS_MAT_DEF);
-        screenMat = new Material(def);
+        if(overlyMat != null){
+            screenMat = overlyMat;
+        }
+        else{
+            MaterialDef def = (MaterialDef) assetManager.loadAsset(_S_TILE_BASED_DEFERRED_SHADING_PASS_MAT_DEF);
+            screenMat = new Material(def);
+        }
         return screenMat;
     }
 

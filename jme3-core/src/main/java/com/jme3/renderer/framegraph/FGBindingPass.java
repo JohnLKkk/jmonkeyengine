@@ -63,6 +63,10 @@ public class FGBindingPass extends FGPass{
         }
     }
 
+    public ArrayList<FGBindable> getBinds() {
+        return binds;
+    }
+
     @Override
     public void execute(FGRenderContext renderContext) {
     }

@@ -54,7 +54,7 @@ import java.util.List;
  * @author JohnKkk
  */
 public class GBufferPass extends OpaquePass{
-    private final static String S_GBUFFER_PASS = "GBufferPass";
+    protected final static String S_GBUFFER_PASS = "GBufferPass";
     public final static String S_RT_0 = "RT_0";
     public final static String S_RT_1 = "RT_1";
     public final static String S_RT_2 = "RT_2";
@@ -63,23 +63,24 @@ public class GBufferPass extends OpaquePass{
     public final static String S_FB = "GBufferFramebuffer";
     public final static String S_LIGHT_DATA = "LIGHT_DATA";
     public final static String S_EXECUTE_STATE = "EXECUTE_STATE";
-    private final LightList lightData = new LightList(null);
-    private final List<Light> tempLights = new ArrayList<Light>();
-    private Boolean bHasDraw = new Boolean(false);
-    private FGVarSource<Boolean> bHasDrawVarSource = null;
+    protected final LightList lightData = new LightList(null);
+    protected final List<Light> tempLights = new ArrayList<Light>();
+    protected Boolean bHasDraw = new Boolean(false);
+    protected FGVarSource<Boolean> bHasDrawVarSource = null;
     // gBuffer
-    private FrameBuffer gBuffer;
-    private Texture2D gBufferData0 = null;
-    private Texture2D gBufferData1 = null;
-    private Texture2D gBufferData2 = null;
-    private Texture2D gBufferData3 = null;
-    private Texture2D gBufferData4 = null;
-    private ColorRGBA gBufferMask = new ColorRGBA(0, 0, 0, 0);
-    private int frameBufferWidth, frameBufferHeight;
+    protected FrameBuffer gBuffer;
+    protected Texture2D gBufferData0 = null;
+    protected Texture2D gBufferData1 = null;
+    protected Texture2D gBufferData2 = null;
+    protected Texture2D gBufferData3 = null;
+    protected Texture2D gBufferData4 = null;
+    protected ColorRGBA gBufferMask = new ColorRGBA(0, 0, 0, 0);
+    protected int frameBufferWidth, frameBufferHeight;
 
     public GBufferPass() {
         super("GBufferPass");
     }
+    public GBufferPass(String passName){super(passName);}
 
     @Override
     public void executeDrawCommandList(FGRenderContext renderContext) {

@@ -58,7 +58,7 @@ public class FGTextureBindableSink<T extends FGRenderTargetSource.RenderTargetSo
         @Override
         public void bind(FGRenderContext renderContext) {
             super.bind(renderContext);
-            if(material != null && bindName != null){
+            if(material != null && bindName != null && this.material.getMaterialDef().getMaterialParam(bindName) != null){
                 this.material.setParam(bindName, bindTextureType, bindValue);
             }
         }

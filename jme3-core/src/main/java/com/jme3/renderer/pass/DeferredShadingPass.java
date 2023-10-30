@@ -55,6 +55,7 @@ public class DeferredShadingPass extends ScreenPass{
     public final static String S_EXECUTE_STATE = "EXECUTE_STATE";
     protected final static String _S_DEFERRED_PASS = "DeferredPass";
     private static final String _S_DEFERRED_SHADING_PASS_MAT_DEF = "Common/MatDefs/ShadingCommon/DeferredShading.j3md";
+    protected Material overlyMat;
     public DeferredShadingPass(){
         this("DeferredShadingPass");
     }
@@ -72,9 +73,18 @@ public class DeferredShadingPass extends ScreenPass{
         ((FGFramebufferCopyBindableSink)getSink(FGGlobal.S_DEFAULT_FB)).setDistFrameBuffer(vp.getOutputFrameBuffer());
     }
 
+    public void setOverlyMat(Material overlyMat) {
+        this.overlyMat = overlyMat;
+    }
+
     protected Material getMaterial(){
-        MaterialDef def = (MaterialDef) assetManager.loadAsset(_S_DEFERRED_SHADING_PASS_MAT_DEF);
-        screenMat = new Material(def);
+        if(overlyMat != null){
+            screenMat = overlyMat;
+        }
+        else{
+            MaterialDef def = (MaterialDef) assetManager.loadAsset(_S_DEFERRED_SHADING_PASS_MAT_DEF);
+            screenMat = new Material(def);
+        }
         return screenMat;
     }
 
