@@ -1,0 +1,17 @@
+#define MY_CUSTOM_PHONG_LIGHTING                  (SHADING_MODEL_MAX_NUM + 1)
+uniform vec2 g_ResolutionInverse;
+vec4 getDepth(in sampler2D tex,in vec2 texC){
+    return texture2D(tex,texC);
+}
+vec3 approximateNormal(in vec3 pos,in vec2 texCoord, in mat4 matrixInverse){
+    float step = g_ResolutionInverse.x ;
+    float stepy = g_ResolutionInverse.y ;
+    float depth2 = getDepth(GBUFFER_DEPTH,texCoord + vec2(step,-stepy)).r;
+    float depth3 = getDepth(GBUFFER_DEPTH,texCoord + vec2(-step,-stepy)).r;
+    vec3 pos2 = vec3(getPosition(texCoord + vec2(step,-stepy),depth2,matrixInverse));
+    vec3 pos3 = vec3(getPosition(texCoord + vec2(-step,-stepy),depth3,matrixInverse));
+
+    vec3 v1 = (pos - pos2).xyz;
+    vec3 v2 = (pos3 - pos2).xyz;
+    return normalize(cross(-v1, v2));
+}
