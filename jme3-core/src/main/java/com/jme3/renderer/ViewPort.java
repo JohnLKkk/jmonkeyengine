@@ -33,6 +33,7 @@ package com.jme3.renderer;
 
 import com.jme3.math.ColorRGBA;
 import com.jme3.post.SceneProcessor;
+import com.jme3.renderer.framegraph.FrameGraph;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -64,6 +65,10 @@ import com.jme3.util.SafeArrayList;
  */
 public class ViewPort {
 
+    /**
+     * curFrameGraph
+     */
+    protected FrameGraph frameGraph;
     /**
      * Name for this viewport.
      */
@@ -439,4 +444,20 @@ public class ViewPort {
         return enabled;
     }
 
+    /**
+     * Returns the FrameGraph used by this ViewPort, if null, it means using the default global FrameGraph.
+     * @return frameGraph
+     * @see FrameGraph
+     */
+    public FrameGraph getFrameGraph() {
+        return frameGraph;
+    }
+
+    /**
+     * Sets the FrameGraph for the current ViewPort, so we can perform specific rendering pipeline for specific ViewPort.
+     * @param frameGraph
+     */
+    public void setFrameGraph(FrameGraph frameGraph) {
+        this.frameGraph = frameGraph;
+    }
 }

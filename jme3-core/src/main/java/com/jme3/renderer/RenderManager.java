@@ -1347,6 +1347,7 @@ public class RenderManager {
 
         if(useFramegraph){
             RenderPath curRenderPath = vp.getRenderPath() == RenderPath.None ? renderPath : vp.getRenderPath();
+            FrameGraph frameGraph = vp.getFrameGraph() != null ? vp.getFrameGraph() : this.frameGraph;
 
             if (prof!=null) prof.vpStep(VpStep.BeginRender, vp, null);
 
