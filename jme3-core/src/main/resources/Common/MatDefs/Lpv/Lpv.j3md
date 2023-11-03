@@ -1,0 +1,34 @@
+MaterialDef Lpv {
+
+    MaterialParameters {
+        Int GridSize
+        Int RsmSize
+        Int TextureSize
+        Boolean FirstIteration
+        Vector3 LightDirection
+        Texture2D RsmFlux -LINEAR
+        Texture2D RsmWorldPositions -LINEAR
+        Texture2D RsmWorldNormals -LINEAR
+        Texture2D RedContribution -LINEAR
+        Texture2D GreenContribution -LINEAR
+        Texture2D BlueContribution -LINEAR
+        Texture2D RedGeometryVolume -LINEAR
+        Texture2D GreenGeometryVolume -LINEAR
+        Texture2D BlueGeometryVolume -LINEAR
+    }
+
+    Technique {
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/LightInjection.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Lpv/LightInjection.frag
+    }
+
+    Technique GeometryInject{
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/GeometryInjection.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Lpv/GeometryInjection.frag
+    }
+
+    Technique LightPropagation{
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/LightPropagation.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Lpv/LightPropagation.frag
+    }
+}

@@ -1,0 +1,11 @@
+MaterialDef TextureBlit {
+
+    MaterialParameters {
+        Texture2D Texture
+    }
+
+    Technique {
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/FullScreenTriangle.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Lpv/TextureBlit.frag
+    }
+}
