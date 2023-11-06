@@ -1,0 +1,25 @@
+MaterialDef VplVisualize {
+
+    MaterialParameters {
+        Int BoundDrawBuffer
+        Texture2D ColorMap
+        Texture2D LightMap
+        // For instancing
+        Boolean UseInstancing
+    }
+
+    Technique {
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/VplVisualize.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Lpv/VplVisualize.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            ViewProjectionMatrix
+            ViewMatrix
+        }
+
+        Defines {
+            INSTANCING : UseInstancing
+        }
+    }
+}

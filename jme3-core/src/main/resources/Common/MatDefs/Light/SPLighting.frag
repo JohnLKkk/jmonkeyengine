@@ -5,6 +5,13 @@
     #import "Common/ShaderLib/BlinnPhongLighting.glsllib"
     #import "Common/ShaderLib/Lighting.glsllib"
 #endif
+// begin-lpvgi@jhonkkk
+#ifdef APPLY_LPV_GI
+varying vec3 vWNormal;
+varying vec3 vWPosition;
+    #import "Common/ShaderLib/LPVCommon.glsllib"
+#endif
+// end-lpvgi@jhonkkk
 
 // fog - jayfella
 #ifdef USE_FOG
@@ -183,6 +190,12 @@ void main(){
        diffuseColor.rgb  *= lightMapColor;
     #endif
 
+    #ifdef APPLY_LPV_GI
+       vec3 lpv_intensity = get_lpv_intensity(vWNormal, vWPosition);
+       vec3 lpv_radiance = vec3(max(0.0, lpv_intensity.r), max(0.0, lpv_intensity.g), max(0.0, lpv_intensity.b)) / (3.14159265358979323846);
+       vec3 indirect_light = diffuseColor.rgb * lpv_radiance;
+    #endif
+
     #ifdef VERTEX_LIGHTING
         gl_FragColor.rgb = AmbientSum.rgb  * diffuseColor.rgb 
                          + DiffuseSum.rgb  * diffuseColor.rgb
@@ -261,5 +274,8 @@ void main(){
         #endif
     #endif // end fog
 
+    #ifdef APPLY_LPV_GI
+        gl_FragColor.rgb += indirect_light * m_IndirectLightAttenuation;
+    #endif
     gl_FragColor.a = alpha;
 }

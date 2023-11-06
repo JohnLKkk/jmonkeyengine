@@ -45,6 +45,8 @@ MaterialDef PBR Lighting {
         //The type of normal map: -1.0 (DirectX), 1.0 (OpenGl)
         Float NormalType : -1.0
 
+        Boolean UseLpv : TRUE
+
         // For Spec gloss pipeline
         Boolean UseSpecGloss
         Texture2D SpecularMap
@@ -248,6 +250,38 @@ MaterialDef PBR Lighting {
             NUM_MORPH_TARGETS: NumberOfMorphTargets
             NUM_TARGETS_BUFFERS: NumberOfTargetsBuffers
             HORIZON_FADE: HorizonFade
+        }
+    }
+
+    Technique RSMInjection{
+
+        LightMode MultiPass
+
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Lpv/RsmInjection.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100: Common/MatDefs/Lpv/RsmInjection.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldNormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+            CameraPosition
+            WorldMatrix
+            ViewProjectionMatrix
+        }
+
+        Defines {
+            STANDARD_LIGHTING : UseLpv
+            BOUND_DRAW_BUFFER: BoundDrawBuffer
+            BASECOLORMAP : BaseColorMap
+            USE_PACKED_MR: MetallicRoughnessMap
+            NORMALMAP : NormalMap
+            METALLICMAP : MetallicMap
+            NUM_BONES : NumberOfBones
+            INSTANCING : UseInstancing
+            NUM_MORPH_TARGETS: NumberOfMorphTargets
+            NUM_TARGETS_BUFFERS: NumberOfTargetsBuffers
         }
     }
 

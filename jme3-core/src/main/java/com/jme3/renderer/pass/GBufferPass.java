@@ -77,6 +77,26 @@ public class GBufferPass extends OpaquePass{
     private ColorRGBA gBufferMask = new ColorRGBA(0, 0, 0, 0);
     private int frameBufferWidth, frameBufferHeight;
 
+    public Texture2D getgBufferData0() {
+        return gBufferData0;
+    }
+
+    public Texture2D getgBufferData1() {
+        return gBufferData1;
+    }
+
+    public Texture2D getgBufferData2() {
+        return gBufferData2;
+    }
+
+    public Texture2D getgBufferData3() {
+        return gBufferData3;
+    }
+
+    public Texture2D getgBufferData4() {
+        return gBufferData4;
+    }
+
     public GBufferPass() {
         super("GBufferPass");
     }

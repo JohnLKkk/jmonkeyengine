@@ -8,6 +8,13 @@
     #import "Common/ShaderLib/BlinnPhongLighting.glsllib"
 #endif
 
+// begin-lpvgi@jhonkkk
+#ifdef APPLY_LPV_GI
+varying vec3 vWNormal;
+varying vec3 vWPosition;
+#endif
+// end-lpvgi@jhonkkk
+
 // fog - jayfella
 #ifdef USE_FOG
 varying float fog_distance;
@@ -111,6 +118,11 @@ void main(){
    texCoord = inTexCoord;
    #ifdef SEPARATE_TEXCOORD
       texCoord2 = inTexCoord2;
+   #endif
+
+   #ifdef APPLY_LPV_GI
+      vWPosition = TransformWorld(modelSpacePos).xyz;
+      vWNormal = normalize(TransformWorldNormal(modelSpaceNorm));
    #endif
 
    vec3 wvPosition = TransformWorldView(modelSpacePos).xyz;

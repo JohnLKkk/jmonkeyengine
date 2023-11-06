@@ -106,6 +106,10 @@ public class RenderManager {
     private TranslucentPass translucentPass;
     private GuiPass guiPass;
     private PostProcessorPass postProcessorPass;
+
+    public GBufferPass getgBufferPass() {
+        return gBufferPass;
+    }
     // frameGraph=============================================================================↑
 
     // RenderPath

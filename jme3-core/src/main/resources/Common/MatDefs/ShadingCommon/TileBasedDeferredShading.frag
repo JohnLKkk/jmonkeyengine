@@ -63,7 +63,10 @@ void main(){
             vec3 AmbientSum = min(fract(buff1.rgb) * 100.0f, vec3(1.0f)) * g_AmbientLightColor.rgb;
             float Shininess = buff1.a;
             float alpha = diffuseColor.a;
-            vec3 normal = texture2D(Context_InGBuff3, innerTexCoord).xyz;
+            //vec3 normal = texture2D(Context_InGBuff3, innerTexCoord).xyz;
+            vec4 n1n2 = texture2D(Context_InGBuff3, innerTexCoord);
+            vec3 normal = octDecode(n1n2.xy);
+            vec3 norm = octDecode(n1n2.zw);
             vec3 viewDir  = normalize(g_CameraPosition - vPos);
 
 

@@ -16,6 +16,15 @@ MaterialDef Phong Lighting {
         // Use vertex color as an additional diffuse color.
         Boolean UseVertexColor
 
+        // Use LPV GI.
+        Boolean UseLpvGi
+        Boolean UseLpv : TRUE
+        Int LpvGridSize
+        Float IndirectLightAttenuation : 1
+        Texture2D RedIndirectLight -LINEAR
+        Texture2D GreenIndirectLight -LINEAR
+        Texture2D BlueIndirectLight -LINEAR
+
         // Ambient color
         Color Ambient
 
@@ -138,6 +147,7 @@ MaterialDef Phong Lighting {
 
         WorldParameters {
             WorldViewProjectionMatrix
+            WorldNormalMatrix
             NormalMatrix
             WorldViewMatrix
             ViewMatrix
@@ -149,6 +159,7 @@ MaterialDef Phong Lighting {
         Defines {  
             BOUND_DRAW_BUFFER: BoundDrawBuffer         
             VERTEX_COLOR : UseVertexColor
+            APPLY_LPV_GI : UseLpvGi
             VERTEX_LIGHTING : VertexLighting           
             MATERIAL_COLORS : UseMaterialColors         
             DIFFUSEMAP : DiffuseMap
@@ -244,8 +255,10 @@ MaterialDef Phong Lighting {
         }
 
         Defines {
+            LEGACY_LIGHTING : UseLpv
             BOUND_DRAW_BUFFER: BoundDrawBuffer
             MATERIAL_COLORS : UseMaterialColors
+            NORMALMAP : NormalMap
             DIFFUSEMAP : DiffuseMap
             NUM_BONES : NumberOfBones
             INSTANCING : UseInstancing

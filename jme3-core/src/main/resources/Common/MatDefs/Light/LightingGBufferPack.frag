@@ -8,6 +8,8 @@
 #endif
 // shading model
 #import "Common/ShaderLib/ShadingModel.glsllib"
+// octahedral
+#import "Common/ShaderLib/Octahedral.glsllib"
 
 // fog - jayfella
 #ifdef USE_FOG
@@ -181,7 +183,11 @@ void main(){
     #endif
 
     // pack
-    Context_OutGBuff3.xyz = normal;
+    //Context_OutGBuff3.xyz = normal;
+    vec2 n1 = octEncode(normal);
+    vec2 n2 = octEncode(vNormal);
+    Context_OutGBuff3.xy = n1;
+    Context_OutGBuff3.zw = n2;
     Context_OutGBuff0.a = alpha;
 
 //    #ifdef USE_REFLECTION

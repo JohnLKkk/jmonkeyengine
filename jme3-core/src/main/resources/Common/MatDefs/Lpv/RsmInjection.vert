@@ -38,6 +38,9 @@ varying vec3 vWorldNormal;
 void main(){
    vec4 modelSpacePos = vec4(inPosition, 1.0);
    vec3 modelSpaceNorm = inNormal;
+   #ifndef VERTEX_LIGHTING
+    vec3 modelSpaceTan  = inTangent.xyz;
+   #endif
    
    #ifdef NUM_MORPH_TARGETS
         Morph_Compute(modelSpacePos, modelSpaceNorm);
@@ -72,10 +75,19 @@ void main(){
      vec3 wvBinormal = cross(wvNormal, wvTangent);
      mat3 tbnMat = mat3(wvTangent, wvBinormal * inTangent.w,wvNormal);
    #endif
- 
+
    vNormal = wvNormal;
+   #if defined(NORMALMAP) && !defined(VERTEX_LIGHTING)
+        vViewDir  = -wvPosition * tbnMat;
+   #if (defined(PARALLAXMAP) || (defined(NORMALMAP_PARALLAX) && defined(NORMALMAP)))
+        vViewDirPrlx = vViewDir;
+   #endif
+        lightComputeDir(wvPosition, lightColor.w, wvLightPos, vLightDir, lightVec);
+        vLightDir.xyz = (vLightDir.xyz * tbnMat).xyz;
+   #elif !defined(VERTEX_LIGHTING)
     vViewDir = viewDir;
     lightComputeDir(wvPosition, lightColor.w, wvLightPos, vLightDir, lightVec);
+   #endif
 
    #ifdef MATERIAL_COLORS
       DiffuseSum  =  m_Diffuse  * vec4(lightColor.rgb, 1.0);

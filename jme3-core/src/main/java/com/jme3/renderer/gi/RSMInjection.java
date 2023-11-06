@@ -114,13 +114,17 @@ public class RSMInjection {
     }
     private final void updateRSMCamera(){
         if(light.getType() == Light.Type.Directional){
-            int size = 100 / 2;
+            int size = 150 / 2;
             rsmVP.getCamera().setFrustumFar(size);
             rsmVP.getCamera().getRotation().lookAt(((DirectionalLight)light).getDirection(), rsmVP.getCamera().getUp());
             rsmVP.getCamera().update();
             rsmVP.getCamera().setFrustum(-size, size, -size, size, size, -size);
             rsmVP.getCamera().updateViewProjection();
         }
+    }
+
+    public void setInjectionFactor(float injectionFactor) {
+        this.injectionFactor = injectionFactor;
     }
 
     public final void injection(Spatial scene, RenderManager renderManager){
@@ -135,6 +139,7 @@ public class RSMInjection {
         Camera currentCam = renderManager.getCurrentCamera();
         RenderState currentRenderState = renderManager.getForcedRenderState();
         innerRenderState.setDepthTest(true);
+        innerRenderState.setFaceCullMode(RenderState.FaceCullMode.Off);
         innerRenderState.setBlendMode(RenderState.BlendMode.Off);
         innerRenderState.setDepthFunc(RenderState.TestFunction.LessOrEqual);
         renderManager.setForcedRenderState(innerRenderState);

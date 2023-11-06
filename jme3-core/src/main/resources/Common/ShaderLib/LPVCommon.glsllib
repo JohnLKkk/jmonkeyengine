@@ -36,4 +36,37 @@ ivec3 getGridCelli(vec3 world_space_position, int max_grid_size)
 	return ivec3(getGridCellf(world_space_position, max_grid_size));
 }
 
+#ifdef APPLY_LPV_GI
+uniform int m_LpvGridSize;
+uniform float m_IndirectLightAttenuation;
+uniform sampler2D m_RedIndirectLight;
+uniform sampler2D m_GreenIndirectLight;
+uniform sampler2D m_BlueIndirectLight;
+
+vec4 sample_grid_trilinear(in sampler2D t, vec3 grid_cell) {
+	float f_grid_size = float(m_LpvGridSize);
+	float zFloor = floor(grid_cell.z);
+
+	vec2 tex_coord = vec2(grid_cell.x / (f_grid_size * f_grid_size) + zFloor / f_grid_size , grid_cell.y / f_grid_size);
+
+	vec4 t1 = texture(t, tex_coord);
+	vec4 t2 = texture(t, vec2(tex_coord.x + (1.0 / f_grid_size), tex_coord.y));
+
+	return mix(t1,t2, grid_cell.z - zFloor);
+}
+
+vec3 get_lpv_intensity(in vec3 world_space_normal, in vec3 world_space_position)
+{
+	vec4 sh_intensity = dirToSH(-world_space_normal);
+	vec3 grid_cell = getGridCellf(world_space_position.xyz, m_LpvGridSize);
+
+	vec4 red_light = sample_grid_trilinear(m_RedIndirectLight, grid_cell);
+	vec4 green_light = sample_grid_trilinear(m_GreenIndirectLight, grid_cell);
+	vec4 blue_light = sample_grid_trilinear(m_BlueIndirectLight, grid_cell);
+
+	// Dot with sh coeffiencients to get directioal light intesity from the normal
+	return vec3(dot(sh_intensity, red_light), dot(sh_intensity, green_light), dot(sh_intensity, blue_light));
+}
+#endif
+
 #endif // LPV_COMMON_GLSL
