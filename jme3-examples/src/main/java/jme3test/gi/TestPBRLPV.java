@@ -6,6 +6,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.LightProbe;
 import com.jme3.material.Material;
 import com.jme3.material.MaterialDef;
 import com.jme3.material.TechniqueDef;
@@ -16,7 +17,6 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FXAAFilter;
 import com.jme3.post.filters.ToneMapFilter;
 import com.jme3.post.lpv.LPVGIFilter;
-import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.gi.Lpv;
 import com.jme3.renderer.gi.MRTData;
@@ -25,7 +25,6 @@ import com.jme3.renderer.gi.VplVisualisation;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.*;
 import com.jme3.shadow.DirectionalLightShadowFilter;
-import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.texture.Texture2D;
 import com.jme3.util.BufferUtils;
 
@@ -33,7 +32,7 @@ import com.jme3.util.BufferUtils;
  *
  * @author JhonKkk
  */
-public class TestRSM extends SimpleApplication{
+public class TestPBRLPV extends SimpleApplication{
     int frame = 0;
     RSMInjection rsmInjection;
     Lpv lpv;
@@ -42,8 +41,10 @@ public class TestRSM extends SimpleApplication{
     LPVGIFilter lpvgiFilter;
     Spatial scene;
     Node vpls;
+    LightProbe lightProbe;
     boolean rotateLight = false;
     int lpvGridSize = 32;
+    Geometry sky = null;
     private final Geometry createFullscreenTriangle(){
         Mesh triangle = new Mesh();
         Vector3f positions[] = new Vector3f[3];
@@ -60,17 +61,29 @@ public class TestRSM extends SimpleApplication{
     public void simpleInitApp() {
         renderManager.setRenderPath(RenderManager.RenderPath.Deferred);
         renderManager.setPreferredLightMode(TechniqueDef.LightMode.SinglePass);
-        scene = assetManager.loadModel("Models/sponza_with_teapot/sponza_with_teapot.j3o");
-        for(Spatial n : ((Node)scene).getChildren()){
-            if(n instanceof Geometry){
-                Geometry geo = (Geometry)n;
-                geo.getMaterial().setBoolean("UseLpv", true);
-            }
-        }
+        scene = assetManager.loadModel("Models/Ada/Ada.j3o");
+//        for(Spatial n : ((Node)scene).getChildren()){
+//            if(n instanceof Geometry){
+//                Geometry geo = (Geometry)n;
+//                geo.getMaterial().setBoolean("UseLpv", true);
+//            }
+//            else if(n instanceof Node){
+//                for(Spatial n2 : ((Node) n).getChildren()){
+//                    if(n2 instanceof Geometry){
+//                        Geometry geo = ((Geometry)n2);
+//                        geo.getMaterial().setBoolean("UseLpv", true);
+//                    }
+//                }
+//            }
+//        }
+        Geometry cell = (Geometry) ((Node)scene).getChild("cell");
 //        scene.setLocalTranslation(0, -10, 0);
+        sky = (Geometry) ((Node)((Node) scene).getChild("sky")).getChild("Sky");
+        sky.setCullHint(Spatial.CullHint.Never);
         scene.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+        lightProbe = (LightProbe) scene.getLocalLightList().get(1);
         rootNode.attachChild(scene);
-        AmbientLight ambientLight = new AmbientLight(new ColorRGBA(0.1f, 0.1f, 0.1f, 0.1f));
+        AmbientLight ambientLight = new AmbientLight(new ColorRGBA(1, 1, 1, 1));
         rootNode.addLight(ambientLight);
 
         Node mainCamera = (Node) ((Node)scene).getChild("mainCamera");
@@ -86,7 +99,7 @@ public class TestRSM extends SimpleApplication{
         flyCam.setMoveSpeed(20.0f);
 
         rsmInjection = new RSMInjection(directionalLight, 512);
-        rsmInjection.setInjectionFactor(15.0f);
+        rsmInjection.setInjectionFactor(20.0f);
         lpv = new Lpv(512, lpvGridSize, renderManager);
         vpls = VplVisualisation.visualizeVpl(2.25f, lpvGridSize);
         vpls.setQueueBucket(RenderQueue.Bucket.Opaque);
@@ -96,7 +109,7 @@ public class TestRSM extends SimpleApplication{
         FilterPostProcessor filterPostProcessor = new FilterPostProcessor(assetManager);
         DirectionalLightShadowFilter directionalLightShadowFilter = new DirectionalLightShadowFilter(assetManager, 4096, 1);
         directionalLightShadowFilter.setLight(directionalLight);
-        directionalLightShadowFilter.setShadowIntensity(1.0f);
+        directionalLightShadowFilter.setShadowIntensity(0.9f);
         directionalLightShadowFilter.setShadowZExtend(5000.0f);
         directionalLightShadowFilter.setShadowZFadeLength(1000.0f);
         filterPostProcessor.addFilter(directionalLightShadowFilter);
@@ -106,7 +119,8 @@ public class TestRSM extends SimpleApplication{
         FXAAFilter fxaaFilter = new FXAAFilter();
         filterPostProcessor.addFilter(fxaaFilter);
         ToneMapFilter toneMapFilter = new ToneMapFilter();
-        toneMapFilter.setWhitePoint(new Vector3f(0.3f, 0.3f, 0.3f));
+//        toneMapFilter.setWhitePoint(new Vector3f(2.4f, 2.4f, 2.4f));
+//        toneMapFilter.setWhitePoint(new Vector3f(14.4f, 14.4f, 14.4f));
         filterPostProcessor.addFilter(toneMapFilter);
 //        SSAOFilter ssaoFilter = new SSAOFilter(0.1f, 2.5f, 2.2f, 0.0f);
 //        ssaoFilter.setApproximateNormals(true);
@@ -131,6 +145,10 @@ public class TestRSM extends SimpleApplication{
         inputManager.addMapping("rotateLight", new KeyTrigger(KeyInput.KEY_G));
         inputManager.addMapping("showVPLs", new KeyTrigger(KeyInput.KEY_P));
         inputManager.addMapping("enableLPV", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("close", new KeyTrigger(KeyInput.KEY_1));
+        inputManager.addMapping("open", new KeyTrigger(KeyInput.KEY_2));
+        inputManager.addMapping("enableSkyLight", new KeyTrigger(KeyInput.KEY_3));
+        Vector3f c = new Vector3f();
         inputManager.addListener(new ActionListener() {
             @Override
             public void onAction(String name, boolean isPressed, float tpf) {
@@ -143,8 +161,11 @@ public class TestRSM extends SimpleApplication{
                 else if(name.equals("showVPLs") && isPressed){
                     vpls.setCullHint(vpls.getCullHint() == Spatial.CullHint.Always ? Spatial.CullHint.Never : Spatial.CullHint.Always);
                 }
+                else if(name.equals("enableSkyLight") && isPressed){
+                    lightProbe.setEnabled(!lightProbe.isEnabled());
+                }
             }
-        }, "rotateLight", "enableLPV", "showVPLs");
+        }, "rotateLight", "enableLPV", "showVPLs", "close", "open", "enableSkyLight");
     }
     float angleY = 1.0f;
     Quaternion q1 = new Quaternion();
@@ -165,7 +186,7 @@ public class TestRSM extends SimpleApplication{
             lpv.clearAccumulatedBuffer();
             lpv.lightInjection(rsmInjection);
             lpv.geometryInjection(rsmInjection, directionalLight.getDirection());
-            lpv.lightPropagation(20);
+            lpv.lightPropagation(16);
             renderManager.setRenderPath(currentRenderPath);
             if(frame == 1){
                 MRTData acc = lpv.getAccumulatedMRTData();
@@ -176,7 +197,7 @@ public class TestRSM extends SimpleApplication{
                 lpvgiFilter.setTexture("GreenIndirectLight", acc.getRt1().getTexture());
                 lpvgiFilter.setTexture("BlueIndirectLight", acc.getRt2().getTexture());
                 lpvgiFilter.setLpvGridSize(lpvGridSize);
-                lpvgiFilter.setIndirectLightAttenuation(1.0f);
+                lpvgiFilter.setIndirectLightAttenuation(0.3f);
                 lpvgiFilter.setEnabled(true);
             }
 //            if(frame >= 0){
@@ -199,7 +220,7 @@ public class TestRSM extends SimpleApplication{
     }
 
     public static void main(String[] args) {
-        TestRSM testRSM = new TestRSM();
+        TestPBRLPV testRSM = new TestPBRLPV();
         testRSM.start();
     }
 
