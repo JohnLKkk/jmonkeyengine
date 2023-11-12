@@ -137,6 +137,10 @@ MaterialDef Phong Lighting {
         Vector2 LinearFog
         Float ExpFog
         Float ExpSqFog
+
+        // GI
+        TextureArray IrradianceProbeGrid -LINEAR
+        TextureArray MeanDistProbeGrid -LINEAR
     }
 
     Technique {
@@ -198,6 +202,7 @@ MaterialDef Phong Lighting {
         WorldParameters {
             WorldViewProjectionMatrix
             NormalMatrix
+            WorldNormalMatrix
             WorldViewMatrix
             ViewMatrix
             CameraPosition

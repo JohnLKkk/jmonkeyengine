@@ -1,0 +1,15 @@
+uniform bool g_IsBakeLightProbeVolume;
+uniform bool g_ApplyGI;
+uniform float g_DiffuseGIIntensity;
+
+vec3 applyLightProbeVolume(out bool calc, in vec3 diffuse, in vec3 wPosition, in vec3 wNormal)
+{
+    vec3 result = vec3(0);
+    calc = false;
+    if(g_ApplyGI){
+        calc = true;
+        result.rgb += diffuse * computePrefilteredIrradiance(wPosition, wNormal) * g_DiffuseGIIntensity;
+        //result = vec3(1, 0, 0);
+    }
+    return result;
+}

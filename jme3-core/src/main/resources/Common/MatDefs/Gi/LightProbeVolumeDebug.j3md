@@ -1,0 +1,22 @@
+MaterialDef Irradiance {
+
+    MaterialParameters {
+        Int ProbeIndex : 0
+        TextureArray OctahedralData
+    }
+
+    Technique DebugOctahedral{
+        VertexShader GLSL310 GLSL300 GLSL100 GLSL150:   Common/MatDefs/Gui/Gui.vert
+        FragmentShader GLSL310 GLSL300 GLSL100 GLSL150: Common/MatDefs/Gi/OctahedralDebug.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+
+        Defines {
+            TEXTURE : OctahedralData
+            VERTEX_COLOR : VertexColor
+        }
+    }
+
+}

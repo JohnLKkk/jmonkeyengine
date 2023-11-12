@@ -84,7 +84,13 @@ public abstract class Light implements Savable, Cloneable {
          * Light probe
          * @see LightProbe
          */
-        Probe(4);
+        Probe(4),
+
+        /**
+         * Light Probe Volume
+         * @see com.jme3.light.gi.LightProbeVolume
+         */
+        LightProbeVolume(5);
                 
 
         final private int typeId;

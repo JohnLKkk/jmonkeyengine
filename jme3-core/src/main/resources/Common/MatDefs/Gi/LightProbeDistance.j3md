@@ -1,0 +1,23 @@
+MaterialDef LightProbeDistance {
+
+    Technique LightProbeDistance {
+
+        VertexShader GLSL310 GLSL300 GLSL100 GLSL150 :   Common/MatDefs/Gi/LightProbeDistance.vert
+        FragmentShader GLSL310 GLSL300 GLSL100 GLSL150 : Common/MatDefs/Gi/LightProbeDistance.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldViewMatrix
+            ViewProjectionMatrix
+            ViewMatrix
+        }
+
+        Defines {
+            NUM_BONES : NumberOfBones
+            INSTANCING : UseInstancing
+            NUM_MORPH_TARGETS: NumberOfMorphTargets
+            NUM_TARGETS_BUFFERS: NumberOfTargetsBuffers
+        }
+    }
+
+}

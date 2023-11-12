@@ -6,6 +6,12 @@
     #import "Common/ShaderLib/Lighting.glsllib"
 #endif
 
+// octahedral
+#import "Common/ShaderLib/Octahedral.glsllib"
+// gi
+#import "Common/ShaderLib/LightFieldProbe.glsllib"
+#import "Common/ShaderLib/GlobalIllumination.glsllib"
+
 // fog - jayfella
 #ifdef USE_FOG
 #import "Common/ShaderLib/MaterialFog.glsllib"
@@ -34,6 +40,10 @@ varying vec2 texCoord;
 varying vec3 AmbientSum;
 varying vec4 DiffuseSum;
 varying vec3 SpecularSum;
+
+// lpvGI
+varying vec3 wPosition;
+varying vec3 wNormal;
 
 #ifndef VERTEX_LIGHTING
   uniform vec4 g_LightDirection;
@@ -120,6 +130,7 @@ void main(){
     
    #ifdef DIFFUSEMAP
       vec4 diffuseColor = texture2D(m_DiffuseMap, newTexCoord);
+//        diffuseColor.rgb = pow(diffuseColor.rgb, vec3(2.2f));
     #else
       vec4 diffuseColor = vec4(1.0);
     #endif
@@ -228,6 +239,9 @@ void main(){
                            DiffuseSum.rgb   * diffuseColor.rgb  * vec3(light.x) +
                            SpecularSum2.rgb * specularColor.rgb * vec3(light.y);
     #endif
+    bool calcGI = false;
+    vec3 giResult;
+    giResult = applyLightProbeVolume(calcGI, diffuseColor.rgb, wPosition, normalize(wNormal));
 
 
     // add fog after the lighting because shadows will cause the fog to darken
@@ -244,6 +258,10 @@ void main(){
         #endif
     #endif // end fog
 
-
+    if(calcGI){
+        //gl_FragColor.rgb = gl_FragColor.rgb / (gl_FragColor.rgb + vec3(1.0));
+        gl_FragColor.rgb = giResult;
+//        gl_FragColor.rgb = diffuseColor.rgb;
+    }
     gl_FragColor.a = alpha;
 }

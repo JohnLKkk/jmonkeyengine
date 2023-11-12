@@ -112,6 +112,7 @@ public class RenderManager {
     }
     // frameGraph=============================================================================↑
 
+    private boolean isBakeLightProbeVolume;
     // RenderPath
     public enum RenderPath{
         None(-1, "None"),
@@ -217,6 +218,14 @@ public class RenderManager {
      */
     public final void enableFramegraph(boolean useFramegraph){
         this.useFramegraph = useFramegraph;
+    }
+
+    public boolean isBakeLightProbeVolume() {
+        return isBakeLightProbeVolume;
+    }
+
+    public void enableBakeLightProbeVolume(boolean bakeLightProbeVolume) {
+        this.isBakeLightProbeVolume = bakeLightProbeVolume;
     }
 
     /**

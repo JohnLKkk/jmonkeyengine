@@ -1,0 +1,19 @@
+MaterialDef Irradiance {
+
+    MaterialParameters {
+        Int NumSamples
+        Float LobeSize
+        Boolean IsBuildIrradiance
+        Texture2D SphereSamples -LINEAR
+        TextureCubeMap Radiance -LINEAR
+    }
+
+    Technique PackToOctahedral{
+        VertexShader GLSL310 GLSL300 GLSL100 GLSL150:   Common/MatDefs/Gi/ScreenSpace.vert
+        FragmentShader GLSL310 GLSL300 GLSL100 GLSL150: Common/MatDefs/Gi/Irradiance.frag
+        Defines {
+            IS_BUILD_IRRADIANCE: IsBuildIrradiance
+        }
+    }
+
+}
