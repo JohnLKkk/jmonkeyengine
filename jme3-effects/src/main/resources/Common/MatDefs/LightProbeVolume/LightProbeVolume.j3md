@@ -1,26 +1,28 @@
-MaterialDef Default LPV {
+MaterialDef Default LightProbeVolume {
 
     MaterialParameters {
         Int BoundDrawBuffer
         Int NumSamples
         Int NumSamplesDepth
-        // Use LPV GI.
-        Boolean UseLpvGi : TRUE
-        Int LpvGridSize
-        Float IndirectLightAttenuation : 1
+        Vector3 ProbeCounts
+        Vector3 ProbeStartPosition
+        Vector3 ProbeStep
+        // Use IrradianceProbes GI.
+        Float DiffuseGIIntensity
+        Boolean UseIrradianceProbesGi : TRUE
         Texture2D Texture
-        Texture2D RedIndirectLight -LINEAR
-        Texture2D GreenIndirectLight -LINEAR
-        Texture2D BlueIndirectLight -LINEAR
         // Context GBuffer Data
         Texture2D Context_InGBuff0
+        Texture2D Context_InGBuff2
         Texture2D Context_InGBuff3
         Texture2D Context_InGBuff4
+        TextureArray IrradianceProbeGrid -LINEAR
+        TextureArray MeanDistProbeGrid -LINEAR
     }
 
     Technique {
         VertexShader GLSL310 GLSL300 GLSL100 GLSL150:   Common/MatDefs/ShadingCommon/DeferredShading.vert
-        FragmentShader GLSL310 GLSL300 GLSL100 GLSL150 : Common/MatDefs/LPV/LpvGI.frag
+        FragmentShader GLSL310 GLSL300 GLSL100 GLSL150 : Common/MatDefs/LightProbeVolume/IrradianceProbesGI.frag
 
         WorldParameters {
             ViewProjectionMatrixInverse
@@ -30,7 +32,7 @@ MaterialDef Default LPV {
         }
         Defines {
             RESOLVE_MS : NumSamples
-            APPLY_LPV_GI : UseLpvGi
+            APPLY_IRRADIANCE_PROBES_GI : UseIrradianceProbesGi
         }
     }
 
