@@ -124,6 +124,38 @@ public class LightProbeVolumeBake extends BaseAppState {
     public LightProbeVolumeBake() {
     }
 
+    public void setIrradianceNumSamples(int irradianceNumSamples) {
+        this.irradianceNumSamples = irradianceNumSamples;
+    }
+
+    public int getIrradianceNumSamples() {
+        return irradianceNumSamples;
+    }
+
+    public void setIrradianceLobeSize(float irradianceLobeSize) {
+        this.irradianceLobeSize = irradianceLobeSize;
+    }
+
+    public float getIrradianceLobeSize() {
+        return irradianceLobeSize;
+    }
+
+    public void setFilteredDistanceNumSamples(int filteredDistanceNumSamples) {
+        this.filteredDistanceNumSamples = filteredDistanceNumSamples;
+    }
+
+    public int getFilteredDistanceNumSamples() {
+        return filteredDistanceNumSamples;
+    }
+
+    public void setFilteredDistanceLobSize(float filteredDistanceLobSize) {
+        this.filteredDistanceLobSize = filteredDistanceLobSize;
+    }
+
+    public float getFilteredDistanceLobSize() {
+        return filteredDistanceLobSize;
+    }
+
     /**
      * Takes a bake of the surrounding scene.
      *
@@ -182,7 +214,7 @@ public class LightProbeVolumeBake extends BaseAppState {
             TextureCubeMap map = null;
             for(Vector3f probePosition : job.lightProbeVolume.getProbeLocations()){
                 position.set(probePosition);
-                capture(renderManager, job.scene);
+                capture(renderManager, job.scene, true);
                 map = EnvMapUtils.makeCubeMap(images[0],
                         images[1], images[2], images[3], images[4], images[5],
                         imageFormat);
@@ -196,7 +228,7 @@ public class LightProbeVolumeBake extends BaseAppState {
 
 //                renderManager.setForcedTechnique(_S_LIGHT_PROBE_DISTANCE_PASS);
                 renderManager.setForcedMaterial(precomputeLightProbeDistanceFallbackMat);
-                capture(renderManager, job.scene);
+                capture(renderManager, job.scene, false);
                 map = EnvMapUtils.makeCubeMap(images[0],
                         images[1], images[2], images[3], images[4], images[5],
                         imageFormat);
@@ -250,11 +282,17 @@ public class LightProbeVolumeBake extends BaseAppState {
      * @param renderManager
      * @param scene
      */
-    private final void capture(RenderManager renderManager, Spatial scene){
+    private final void capture(RenderManager renderManager, Spatial scene, boolean postProcessor){
         for (int i = 0; i < 6; i++) {
             viewports[i].getCamera().setLocation(position);
             viewports[i].clearScenes();
             viewports[i].attachScene(scene);
+            if(!postProcessor && viewports[i].getProcessors().size() > 0){
+                FilterPostProcessor filterPostProcessor = (FilterPostProcessor) viewports[i].getProcessors().get(0);
+                for(Filter filter : filterPostProcessor.getFilterList()){
+                    filter.setEnabled(false);
+                }
+            }
             renderManager.renderViewPort(viewports[i], 0.16f);
             if(buffers[i] == null){
                 buffers[i] = BufferUtils.createByteBuffer(
@@ -265,6 +303,12 @@ public class LightProbeVolumeBake extends BaseAppState {
                     framebuffers[i], buffers[i], imageFormat);
             images[i] = new Image(imageFormat, captureSize, captureSize, buffers[i],
                     ColorSpace.Linear);
+            if(!postProcessor && viewports[i].getProcessors().size() > 0){
+                FilterPostProcessor filterPostProcessor = (FilterPostProcessor) viewports[i].getProcessors().get(0);
+                for(Filter filter : filterPostProcessor.getFilterList()){
+                    filter.setEnabled(true);
+                }
+            }
         }
     }
 

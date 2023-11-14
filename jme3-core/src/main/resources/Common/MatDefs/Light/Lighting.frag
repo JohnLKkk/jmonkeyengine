@@ -239,10 +239,6 @@ void main(){
                            DiffuseSum.rgb   * diffuseColor.rgb  * vec3(light.x) +
                            SpecularSum2.rgb * specularColor.rgb * vec3(light.y);
     #endif
-    bool calcGI = false;
-    vec3 giResult;
-    giResult = applyLightProbeVolume(calcGI, diffuseColor.rgb, wPosition, normalize(wNormal));
-
 
     // add fog after the lighting because shadows will cause the fog to darken
     // which just results in the geometry looking like it's changed color
@@ -258,10 +254,5 @@ void main(){
         #endif
     #endif // end fog
 
-    if(calcGI){
-        //gl_FragColor.rgb = gl_FragColor.rgb / (gl_FragColor.rgb + vec3(1.0));
-        gl_FragColor.rgb = giResult;
-//        gl_FragColor.rgb = diffuseColor.rgb;
-    }
     gl_FragColor.a = alpha;
 }
