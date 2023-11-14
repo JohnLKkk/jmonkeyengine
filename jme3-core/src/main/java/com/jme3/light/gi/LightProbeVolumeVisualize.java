@@ -33,12 +33,11 @@ public class LightProbeVolumeVisualize {
         assetManager.registerLoader(J3MLoader.class, "j3md");
         assetManager.registerLoader(GLSLLoader.class, "vert", "frag","geom","tsctrl","tseval","glsllib","glsl");
     }
-
-    public static final Spatial generateLightProbeVolumeDebugGeometry(LightProbeVolume lightProbeVolume){
+    public static final Spatial generateLightProbeVolumeDebugGeometry(LightProbeVolume lightProbeVolume, float radius){
         if(true){
             InstancedNode instancedNode = new InstancedNode("lightProbeVolumeDebug");
             instancedNode.setShadowMode(RenderQueue.ShadowMode.Off);
-            Geometry spGeo = new Geometry("point_light_cull_box", new Sphere(10, 10, 0.1f));
+            Geometry spGeo = new Geometry("point_light_cull_box", new Sphere(10, 10, radius));
             if(assetManager == null){
                 initAssetManager();
                 lightProbeDebugMaterialDef = (MaterialDef) assetManager.loadAsset("Common/MatDefs/Misc/Unshaded.j3md");
@@ -57,5 +56,9 @@ public class LightProbeVolumeVisualize {
             return instancedNode;
         }
         return null;
+    }
+
+    public static final Spatial generateLightProbeVolumeDebugGeometry(LightProbeVolume lightProbeVolume){
+        return generateLightProbeVolumeDebugGeometry(lightProbeVolume, 0.1f);
     }
 }
