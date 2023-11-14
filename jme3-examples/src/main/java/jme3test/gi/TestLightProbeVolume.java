@@ -17,10 +17,13 @@ import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FXAAFilter;
 import com.jme3.post.filters.ToneMapFilter;
+import com.jme3.post.gi.LightProbeVolumeFilter;
+import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
+import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
 import com.sun.management.HotSpotDiagnosticMXBean;
 
@@ -29,13 +32,16 @@ import java.lang.management.ManagementFactory;
 public class TestLightProbeVolume extends SimpleApplication {
     private int frame = 0;
     LightProbeVolume lightProbeVolume;
+    LightProbeVolumeFilter lightProbeVolumeFilter;
     private Material octahedralDebugMat;
+    DirectionalLight directionalLight;
     private Spatial skyGeo;
     private int probeIndex = 0;
     DirectionalLightShadowFilter dlsf;
     Node sponza;
     @Override
     public void simpleInitApp() {
+        renderManager.setRenderPath(RenderManager.RenderPath.Deferred);
         sponza = (Node) assetManager.loadModel("Models/sponza/sponza.j3o");
         for(Spatial child : sponza.getChildren()){
             if(child.getName().equals("Sky")){
@@ -55,8 +61,8 @@ public class TestLightProbeVolume extends SimpleApplication {
             sponza.detachChild(skyGeo);
         }
         AmbientLight ambientLight = (AmbientLight)sponza.getLocalLightList().get(1);
-        ambientLight.setColor(new ColorRGBA(0.15f, 0.15f, 0.15f, 1.0f));
-        DirectionalLight directionalLight = (DirectionalLight) sponza.getLocalLightList().get(0);
+        ambientLight.setColor(new ColorRGBA(0.35f, 0.35f, 0.35f, 1.0f));
+        directionalLight = (DirectionalLight) sponza.getLocalLightList().get(0);
         directionalLight.setColor(new ColorRGBA(13, 13, 13, 1));
 //        directionalLight.setColor(new ColorRGBA(1, 1, 1, 1));
         rootNode.attachChild(sponza);
@@ -70,7 +76,7 @@ public class TestLightProbeVolume extends SimpleApplication {
         lightProbeVolume.setProbeStep(new Vector3f(15.6f / 2.0f, 8.0f / 2.0f, 5.35f));
         lightProbeVolume.setIndirectMultiplier(0.24f);
         lightProbeVolume.placeProbes();
-        rootNode.addLight(lightProbeVolume);
+//        rootNode.addLight(lightProbeVolume);
 //        Spatial debugLightProbeVolume = LightProbeVolumeVisualize.generateLightProbeVolumeDebugGeometry(lightProbeVolume);
 //        rootNode.attachChild(debugLightProbeVolume);
 
@@ -78,19 +84,23 @@ public class TestLightProbeVolume extends SimpleApplication {
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         dlsf = new DirectionalLightShadowFilter(assetManager, 2048, 1);
         dlsf.setLight(directionalLight);
-        dlsf.setShadowIntensity(0.7f);
+        dlsf.setShadowIntensity(1.0f);
 //        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
 //        dlsf.setShadowZExtend(100.0f);
-//        fpp.addFilter(dlsf);
+        fpp.addFilter(dlsf);
         FXAAFilter fxaaFilter = new FXAAFilter();
         fpp.addFilter(fxaaFilter);
 
         ToneMapFilter toneMapFilter = new ToneMapFilter();
+        lightProbeVolumeFilter = new LightProbeVolumeFilter();
 //        toneMapFilter.setToneMapModel(ToneMapFilter.ToneMapMode.ACES_FILMIC, renderManager);
-//        fpp.addFilter(toneMapFilter);
+        lightProbeVolumeFilter.setEnabled(false);
+        fpp.addFilter(lightProbeVolumeFilter);
+        fpp.addFilter(toneMapFilter);
         viewPort.addProcessor(fpp);
 
         LightProbeVolumeBake lightProbeVolumeBake = new LightProbeVolumeBake();
+        lightProbeVolumeBake.setFilteredDistanceLobSize(0.2f);
         stateManager.attach(lightProbeVolumeBake);
 
 
@@ -103,7 +113,7 @@ public class TestLightProbeVolume extends SimpleApplication {
         octahedralDebugMat.selectTechnique("DebugOctahedral", renderManager);
         debugOctahedral.setMaterial(octahedralDebugMat);
 //        debugOctahedral.setCullHint(Spatial.CullHint.Always);
-        guiNode.attachChild(debugOctahedral);
+//        guiNode.attachChild(debugOctahedral);
 
         inputManager.addMapping("up", new KeyTrigger(KeyInput.KEY_1));
         inputManager.addMapping("down", new KeyTrigger(KeyInput.KEY_2));
@@ -157,17 +167,27 @@ public class TestLightProbeVolume extends SimpleApplication {
             // d
             LightProbeVolumeBake lightProbeVolumeBake = stateManager.getState(LightProbeVolumeBake.class);
             if(lightProbeVolumeBake != null){
+                RenderManager.RenderPath currentRenderPath = renderManager.getRenderPath();
+                renderManager.setRenderPath(RenderManager.RenderPath.Forward);
                 lightProbeVolumeBake.bakeLightProbeVolume(rootNode, lightProbeVolume, new JobProgressAdapter<LightProbeVolume>() {
                     @Override
                     public void done(LightProbeVolume result) {
                         System.out.println("bake done!");
+                        renderManager.setRenderPath(currentRenderPath);
+                        lightProbeVolumeFilter.setEnabled(true);
+                        lightProbeVolumeFilter.setLightProbeVolume(lightProbeVolume);
+                        lightProbeVolumeFilter.setTexture("Context_InGBuff0", renderManager.getgBufferPass().getgBufferData0());
+                        lightProbeVolumeFilter.setTexture("Context_InGBuff2", renderManager.getgBufferPass().getgBufferData2());
+                        lightProbeVolumeFilter.setTexture("Context_InGBuff3", renderManager.getgBufferPass().getgBufferData3());
+                        lightProbeVolumeFilter.setTexture("Context_InGBuff4", renderManager.getgBufferPass().getgBufferData4());
                         octahedralDebugMat.setTexture("OctahedralData", result.getProbeOctahedralIrradiances());
                         Spatial debugLightProbeVolume = LightProbeVolumeVisualize.generateLightProbeVolumeDebugGeometry(lightProbeVolume);
                         rootNode.attachChild(debugLightProbeVolume);
                         rootNode.attachChild(skyGeo);
                         rootNode.updateGeometricState();
-//                        dlsf.setShadowIntensity(0.9f);
-                        dlsf.setEnabled(false);
+                        dlsf.setShadowIntensity(0.99f);
+//                        dlsf.setEnabled(false);
+                        directionalLight.setColor(new ColorRGBA(3, 3, 3, 1));
                     }
                 });
             }

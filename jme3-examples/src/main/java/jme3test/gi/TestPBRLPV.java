@@ -191,7 +191,7 @@ public class TestPBRLPV extends SimpleApplication{
             if(frame == 1){
                 MRTData acc = lpv.getAccumulatedMRTData();
                 lpvgiFilter.setTexture("Context_InGBuff0", renderManager.getgBufferPass().getgBufferData0());
-                lpvgiFilter.setTexture("Context_InGBuff2", renderManager.getgBufferPass().getgBufferData2());
+                lpvgiFilter.setTexture("Context_InGBuff3", renderManager.getgBufferPass().getgBufferData3());
                 lpvgiFilter.setTexture("Context_InGBuff4", renderManager.getgBufferPass().getgBufferData4());
                 lpvgiFilter.setTexture("RedIndirectLight", acc.getRt0().getTexture());
                 lpvgiFilter.setTexture("GreenIndirectLight", acc.getRt1().getTexture());
