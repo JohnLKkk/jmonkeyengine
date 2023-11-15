@@ -6,6 +6,7 @@ import com.jme3.material.Material;
 import com.jme3.post.Filter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Texture;
 
 public class LightProbeVolumeFilter extends Filter {
@@ -22,6 +23,14 @@ public class LightProbeVolumeFilter extends Filter {
     protected void initFilter(AssetManager manager, RenderManager renderManager, ViewPort vp, int w, int h) {
         irradianceProbesGIMat = new Material(manager, "Common/MatDefs/LightProbeVolume/LightProbeVolume.j3md");
         irradianceProbesGIMat.setBoolean(_g_ApplyGI, false);
+    }
+
+    @Override
+    protected void postFrame(RenderManager renderManager, ViewPort viewPort, FrameBuffer prevFilterBuffer, FrameBuffer sceneBuffer) {
+        super.postFrame(renderManager, viewPort, prevFilterBuffer, sceneBuffer);
+        if(lightProbeVolume != null){
+            irradianceProbesGIMat.setFloat(_g_DiffuseGIIntensity, lightProbeVolume.getIndirectMultiplier());
+        }
     }
 
     public void setLightProbeVolume(LightProbeVolume lightProbeVolume) {
