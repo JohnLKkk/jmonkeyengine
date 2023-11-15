@@ -65,13 +65,14 @@ public class TestLightProbeVolume3 extends SimpleApplication {
         rootNode.attachChild(sponza);
         cam.setLocation(new Vector3f(-15.0f, 3.0f, 0.0f));
         cam.setRotation(new Quaternion(new float[]{(float) Math.toRadians(-15), (float) Math.toRadians(90), 0}));
+        cam.setFrustumPerspective(70.0f, cam.getWidth() * 1.0f / cam.getHeight(), 0.01f, 100.0f);
         flyCam.setMoveSpeed(10.0f);
 
         lightProbeVolume = new LightProbeVolume();
         lightProbeVolume.setProbeOrigin(new Vector3f(-2.0f, -1.0f, -2.0f));
         lightProbeVolume.setProbeCount(new Vector3f(4, 4, 4));
         lightProbeVolume.setProbeStep(new Vector3f(1.4f, 0.7f, 1.4f));
-        lightProbeVolume.setIndirectMultiplier(0.2f);
+        lightProbeVolume.setIndirectMultiplier(0.1f);
         lightProbeVolume.placeProbes();
 //        rootNode.addLight(lightProbeVolume);
 //        Spatial debugLightProbeVolume = LightProbeVolumeVisualize.generateLightProbeVolumeDebugGeometry(lightProbeVolume);
@@ -91,6 +92,7 @@ public class TestLightProbeVolume3 extends SimpleApplication {
         lightProbeVolumeFilter.setEnabled(false);
         fpp.addFilter(lightProbeVolumeFilter);
         FXAAFilter fxaaFilter = new FXAAFilter();
+//        fxaaFilter.setReduceMul(1.0f/32.0f);
         fpp.addFilter(fxaaFilter);
         fpp.addFilter(toneMapFilter);
         viewPort.addProcessor(fpp);
@@ -129,14 +131,15 @@ public class TestLightProbeVolume3 extends SimpleApplication {
 //                    toneMapFilter.setExposure(toneMapFilter.getExposure() - 0.1f);
                 }
                 if(name.equals("toggle") && !isPressed){
-                    lightProbeVolume.setEnabled(!lightProbeVolume.isEnabled());
+                    lightProbeVolumeFilter.setEnabled(!lightProbeVolumeFilter.isEnabled());
+//                    lightProbeVolume.setEnabled(!lightProbeVolume.isEnabled());
                 }
                 if(name.equals("addMultiplier") && isPressed){
-                    lightProbeVolume.setIndirectMultiplier(lightProbeVolume.getIndirectMultiplier() + 0.1f);
+                    lightProbeVolume.setIndirectMultiplier(lightProbeVolume.getIndirectMultiplier() + 0.01f);
                     System.out.println("lightProbeVolume:" + lightProbeVolume.getIndirectMultiplier());
                 }
                 if(name.equals("subMultiplier") && isPressed){
-                    lightProbeVolume.setIndirectMultiplier(lightProbeVolume.getIndirectMultiplier() - 0.1f);
+                    lightProbeVolume.setIndirectMultiplier(lightProbeVolume.getIndirectMultiplier() - 0.01f);
                     System.out.println("lightProbeVolume:" + lightProbeVolume.getIndirectMultiplier());
                 }
                 if(name.equals("up") && !isPressed){
