@@ -1,0 +1,45 @@
+MaterialDef ProbeDebug {
+
+    MaterialParameters {
+        Int BoundDrawBuffer
+        // For instancing
+        Boolean UseInstancing
+    }
+
+    Technique {
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Gi/ProbeDebug.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Gi/ProbeDebug.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldNormalMatrix
+            NormalMatrix
+            ViewProjectionMatrix
+            ViewMatrix
+        }
+
+        Defines {
+            BOUND_DRAW_BUFFER: BoundDrawBuffer
+            INSTANCING : UseInstancing
+        }
+    }
+
+    Technique GBufferPass{
+        Pipeline Deferred
+        VertexShader   GLSL310 GLSL300 GLSL150 GLSL100 :   Common/MatDefs/Gi/ProbeDebug.vert
+        FragmentShader GLSL310 GLSL300 GLSL150 GLSL100 : Common/MatDefs/Gi/ProbeDebugGBufferPack.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldNormalMatrix
+            NormalMatrix
+            ViewProjectionMatrix
+            ViewMatrix
+        }
+
+        Defines {
+            BOUND_DRAW_BUFFER: BoundDrawBuffer
+            INSTANCING : UseInstancing
+        }
+    }
+}

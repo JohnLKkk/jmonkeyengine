@@ -37,13 +37,13 @@ public class LightProbeVolumeVisualize {
         if(true){
             InstancedNode instancedNode = new InstancedNode("lightProbeVolumeDebug");
             instancedNode.setShadowMode(RenderQueue.ShadowMode.Off);
-            Geometry spGeo = new Geometry("point_light_cull_box", new Sphere(10, 10, radius));
+            Geometry spGeo = new Geometry("point_light_cull_box", new Sphere(16, 16, radius));
             if(assetManager == null){
                 initAssetManager();
-                lightProbeDebugMaterialDef = (MaterialDef) assetManager.loadAsset("Common/MatDefs/Misc/Unshaded.j3md");
+                lightProbeDebugMaterialDef = (MaterialDef) assetManager.loadAsset("Common/MatDefs/Gi/ProbeDebug.j3md");
             }
             Material spMat = new Material(lightProbeDebugMaterialDef);
-            spMat.setColor("Color", ColorRGBA.White);
+//            spMat.setColor("Color", ColorRGBA.White);
             spMat.setBoolean("UseInstancing", true);
             spGeo.setMaterial(spMat);
 

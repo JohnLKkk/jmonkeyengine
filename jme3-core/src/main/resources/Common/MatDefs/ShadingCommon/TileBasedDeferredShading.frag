@@ -373,4 +373,7 @@ void main(){
         gl_FragColor.rgb = shadingInfo.rgb;
         gl_FragColor.a = min(fract(shadingInfo.a) * 10.0f, 0.0f);
     }
+    else if(shadingModelId == LIGHT_PROBE_DEBUG){
+        gl_FragColor = vec4(1);
+    }
 }
